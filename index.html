@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>博客系统</title>
+    <style>
+        body{padding:10px 20px;}
+        .title{display: inline-block;margin:0;}
+        .login{float:right;margin-right:20px;}
+        .add-wrap{padding:20px;}
+        .admin{float:right;}
+    </style>
+</head>
+<body>
+    <div class="tit-wrap">
+        <h3 class="title">博客首页</h3>
+        <!-- <span class="username">sili</span>
+        <span class="logout">退出登录</span> -->
+        <a href="/admin.html" class="admin">管理中心</a>
+        <a href="/login.html" class="login">登录</a>
+    </div>
+    <ol class="content"></ol>
+</body>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.19.4/moment.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.19.4/locale/zh-cn.js"></script>
+<script>
+$(document).ready(function(){
+    $.ajax({
+        type: 'get',
+        url: '/api/blog/list',
+        success: function(res){
+        if(res.errno === 0){
+
+            var html = '';
+
+            for(var i = 0; i < res.data.length; i++){
+
+                var date = moment(res.data[i].createtime).format('YYYY-MM-DD HH:mm:ss')
+
+                html += `<li>
+                            <h5><a href='/detail.html?id=${res.data[i].id}'>${res.data[i].title}</a></h5>
+                            <div>
+                                <span>${res.data[i].author}</span>
+                                <span>${date}</span>
+                            </div>
+                        </li>`
+            }
+            $(".content").html(html)
+        }
+        },
+        error:function(err){
+            console.log(err)
+        }
+    })
+});
+</script>
+</html>

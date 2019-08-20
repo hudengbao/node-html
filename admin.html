@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>博客系统</title>
+    <style>
+        body{padding:10px 20px;}
+        li{width:500px;}
+        h5{margin:10px 0;display: inline-block;}
+        .label{display: inline-block;width:80px;}
+        .main > div{margin-top:30px;}
+        .to-edit{float:right;margin-right:20px;}
+        .btn-del{float:right;}
+    </style>
+</head>
+<body>
+    <div class="tit-wrap">
+        <a href="/index.html" class="title">博客首页</a>
+        <span>&gt;</span>
+        <span class="nav">管理中心</span>
+    </div>
+    <div class="main">
+        <div><a href="/edit.html">新建博客</a></div>
+        <div>
+            <input  id="keyword" type="text">
+            <button class="btn-search">搜索</button>
+        </div>
+        <div>
+            <ol class="list"></ol>
+        </div>
+    </div>
+</body>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.19.4/moment.min.js"></script>
+<script src="https://cdn.bootcss.com/moment.js/2.19.4/locale/zh-cn.js"></script>
+<script>
+$(document).ready(function(){
+
+    function getList(author,keyword){
+
+        $.ajax({
+            type: 'get',
+            url: `/api/blog/list?author=${author}&keyword=${keyword || ''}`,
+            success: function(res){
+            if(res.errno === 0){
+
+                var html = '';
+
+                for(var i = 0; i < res.data.length; i++){
+
+                    html += `<li>
+                                <h5>${res.data[i].title}</h5>
+                                <button class="btn-del" data-id=${res.data[i].id}>删除</button>
+                                <a class="to-edit" href="./edit.html?id=${res.data[i].id}">编辑</a>
+                            </li>`
+                }
+                $(".list").html(html)
+            }
+            },
+            error:function(err){
+                console.log(err)
+            }
+        })
+    }
+
+    getList('lisi')
+
+    $(".btn-search").on("click",function(){
+
+        var keyword = $("#keyword").val().trim();
+
+        console.log(keyword)
+
+        getList('lisi',keyword)
+    })
+
+    $(".list").on("click",".btn-del",function(){
+        var id = $(this).attr("data-id");
+        console.log(id)
+
+        $.ajax({
+            type: 'post',
+            url: `/api/blog/delete`,
+            data: JSON.stringify({id:id}),
+            contentType: 'application/json',
+            timeout: 1000*10,
+            dataType: 'json',
+            success: function(res){
+                if(res.errno === 0){
+                    getList('lisi')
+                }
+            },
+            error:function(err){
+                console.log(err)
+            }
+        })
+    })
+});
+</script>
+</html>
