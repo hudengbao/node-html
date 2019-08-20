@@ -88,6 +88,8 @@ $(document).ready(function(){
             success: function(res){
                 if(res.errno === 0){
                     getList('lisi')
+                }else{
+                    alert(res.message)
                 }
             },
             error:function(err){
